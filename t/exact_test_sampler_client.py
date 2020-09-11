@@ -1,6 +1,7 @@
 import configparser
-import os
 import grpc
+import os
+import sys
 
 from exact_test_sampler_pb2_grpc import ExactTestSamplerStub
 
@@ -40,6 +41,9 @@ _print_sampler_servers()
 
 def get_sampler_servers():
     ret = []
+    # Disable remote connections in pytest.
+    if "pytest" in sys.modules:
+        return ret
     for connection_string in parse_sampler_servers():
         channel = grpc.insecure_channel(connection_string)
         ret.append(ExactTestSamplerStub(channel))
